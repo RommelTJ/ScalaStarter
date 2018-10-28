@@ -40,7 +40,6 @@ class HomeController @Inject()(cc: MessagesControllerComponents) extends Message
       // This is the bad case, where the form had validation errors.
       // Let's show the user the form again, with the errors highlighted.
       // Note how we pass the form with errors to the template.
-      println("ERRORS")
       BadRequest(views.html.index(formWithErrors, postUrl))
     }
 

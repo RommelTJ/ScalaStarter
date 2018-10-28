@@ -27,8 +27,8 @@
 
             <img class="mb-4" src="@routes.Assets.versioned("images/chatmeter_logo2x.png")" alt="" width="330">
             <h1 class="h3 mb-3 font-weight-normal">Please type your URL below:</h1>
-            @helper.input(form("inputURL")) { (id, name, value, args) =>
-                <input type="text" id="@id" class="form-control" placeholder="https://www.google.com/" required autofocus>
+            @helper.input(form("inputURL"), '_label -> "URL") { (id, name, value, args) =>
+                <input type="text" id="@id" name="@name" class="form-control" placeholder="https://www.google.com/" required autofocus @toHtmlArgs(args)>
             }
             <button class="btn btn-lg btn-primary btn-block" type="submit">Check Title</button>
 

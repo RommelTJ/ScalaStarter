@@ -1,7 +1,9 @@
 package controllers
 
 import javax.inject._
+import models.URLModel
 import play.api.mvc._
+import play.api.libs.json._
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -10,7 +12,7 @@ import play.api.mvc._
 @Singleton
 class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
 
-  private var websiteTitle: String = _
+  // private var urlModel: URLModel = _
 
   private val postUrl = routes.HomeController.getTitleFromURL()
 
@@ -21,12 +23,16 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
    * a path of `/`.
    */
   def index = Action { implicit request =>
-    Ok(views.html.index(websiteTitle, postUrl))
+    Ok(views.html.index(postUrl))
   }
 
   def getTitleFromURL = Action { implicit request =>
-    println("This ran")
-    Ok(views.html.index(websiteTitle, postUrl))
+    val urlModel = URLModel("https://rommelrico.com/", "Rommel Rico Test")
+
+    implicit val urlModelWrites = Json.writes[URLModel]
+    val urlModelJson = Json.toJson(urlModel).toString()
+
+    Ok(urlModelJson).as("application/json")
   }
 
 }

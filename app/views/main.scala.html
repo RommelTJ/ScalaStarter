@@ -4,7 +4,7 @@
  * two arguments, a `String` for the title of the page and an `Html`
  * object to insert into the body of the page.
  *@
-@(title: String)(content: Html)
+@(title: String)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +27,6 @@
             <label for="inputURL" class="sr-only">URL</label>
             <input type="text" id="inputURL" class="form-control" placeholder="https://www.google.com/" required autofocus>
             <button class="btn btn-lg btn-primary btn-block" type="submit">Check Title</button>
-            @content
         </form>
 
         <!-- jQuery -->

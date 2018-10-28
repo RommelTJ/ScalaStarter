@@ -4,13 +4,21 @@ import javax.inject._
 import models.URLModel
 import play.api.mvc._
 import play.api.libs.json._
+import java.net.URL
+import java.util.Scanner
+
+import controllers.URLForm.{URLData, form}
+import javax.inject.Inject
+import models.URLModel
+import play.api.data._
+import play.api.mvc._
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
  */
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class HomeController @Inject()(cc: MessagesControllerComponents) extends MessagesAbstractController(cc) {
 
   // private var urlModel: URLModel = _
 
@@ -22,17 +30,35 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index = Action { implicit request =>
-    Ok(views.html.index(postUrl))
+  def index = Action { implicit request: MessagesRequest[AnyContent] =>
+    Ok(views.html.index(URLForm.form, postUrl))
   }
 
-  def getTitleFromURL = Action { implicit request =>
-    val urlModel = URLModel("https://rommelrico.com/", "Rommel Rico Test")
+  def getTitleFromURL = Action { implicit request: MessagesRequest[AnyContent] =>
 
-    implicit val urlModelWrites = Json.writes[URLModel]
-    val urlModelJson = Json.toJson(urlModel).toString()
+    val errorFunction = { formWithErrors: Form[URLData] =>
+      // This is the bad case, where the form had validation errors.
+      // Let's show the user the form again, with the errors highlighted.
+      // Note how we pass the form with errors to the template.
+      println("ERRORS")
+      BadRequest(views.html.index(formWithErrors, postUrl))
+    }
 
-    Ok(urlModelJson).as("application/json")
+    val successFunction = { data: URLData =>
+      // This is the good case, where the form was successfully parsed as a Data object.
+
+      println(s"RECEIVED: ${data.url}")
+
+      val urlModel = URLModel("https://rommelrico.com/", "Rommel Rico Test")
+
+      implicit val urlModelWrites = Json.writes[URLModel]
+      val urlModelJson = Json.toJson(urlModel).toString()
+
+      Ok(urlModelJson).as("application/json")
+    }
+
+    val formValidationResult = form.bindFromRequest
+    formValidationResult.fold(errorFunction, successFunction)
   }
 
 }

@@ -1,6 +1,7 @@
 $("#urlInputForm").submit(function(e) {
     var form = $(this);
     var url = form.attr('action');
+    console.log("HERE");
 
     $.ajax({
         type: "POST",
@@ -13,8 +14,6 @@ $("#urlInputForm").submit(function(e) {
             }
         }
     });
-
-
 
     e.preventDefault(); // avoid to execute the actual submit of the form.
 });

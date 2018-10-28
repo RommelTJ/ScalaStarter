@@ -12,12 +12,28 @@
         @* Here's where we render the page title `String`. *@
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/custom.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
-        <script src="@routes.Assets.versioned("javascripts/hello.js")" type="text/javascript"></script>
+
+        <!-- Bootstrap CSS -->
+        <link href="@routes.Assets.versioned("stylesheets/bootstrap/bootstrap.min.css")" rel="stylesheet">
+
     </head>
-    <body>
-        @* And here's where we render the `Html` object containing
-         * the page content. *@
-        @content
+
+    <body class="text-center">
+        <form class="form-signin">
+            <img class="mb-4" src="@routes.Assets.versioned("images/chatmeter_logo2x.png")" alt="" width="330">
+            <h1 class="h3 mb-3 font-weight-normal">Please type your URL below</h1>
+            <label for="inputURL" class="sr-only">URL</label>
+            <input type="text" id="inputURL" class="form-control" placeholder="https://www.google.com/" required autofocus>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Check Title</button>
+            @content
+        </form>
+
+        <!-- jQuery -->
+        <script src="@routes.Assets.versioned("javascripts/jquery-3.3.1.min.js")" type="text/javascript"></script>
+
+        <!-- Bootstrap -->
+        <script src="@routes.Assets.versioned("javascripts/bootstrap/bootstrap.min.js")" type="text/javascript"></script>
     </body>
 </html>

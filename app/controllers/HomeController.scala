@@ -12,7 +12,7 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
 
   private var websiteTitle: String = _
 
-  private val postUrl = routes.HomeController.testURL()
+  private val postUrl = routes.HomeController.getTitleFromURL()
 
   /**
    * Create an Action to render an HTML page with a welcome message.
@@ -24,7 +24,7 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
     Ok(views.html.index(websiteTitle, postUrl))
   }
 
-  def testURL = Action { implicit request =>
+  def getTitleFromURL = Action { implicit request =>
     println("This ran")
     Ok(views.html.index(websiteTitle, postUrl))
   }

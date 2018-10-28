@@ -4,7 +4,7 @@
  * two arguments, a `String` for the title of the page and an `Html`
  * object to insert into the body of the page.
  *@
-@(title: String, websiteTitle: String)
+@(title: String, websiteTitle: String, postUrl: Call)(implicit request: RequestHeader)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +21,8 @@
     </head>
 
     <body class="text-center">
-        <form id="urlInputForm" class="form-signin" action="/">
+        <form id="urlInputForm" class="form-signin" action="@postUrl" method="post">
+            @helper.CSRF.formField
             <img class="mb-4" src="@routes.Assets.versioned("images/chatmeter_logo2x.png")" alt="" width="330">
             <h1 class="h3 mb-3 font-weight-normal">Please type your URL below:</h1>
             <label for="inputURL" class="sr-only">URL</label>

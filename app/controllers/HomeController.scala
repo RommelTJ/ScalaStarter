@@ -4,7 +4,7 @@ import javax.inject._
 import models.URLModel
 import play.api.mvc._
 import play.api.libs.json._
-import java.net.URL
+import java.net.{MalformedURLException, URL}
 import java.util.Scanner
 
 import controllers.URLForm.{URLData, form}
@@ -45,14 +45,20 @@ class HomeController @Inject()(cc: MessagesControllerComponents) extends Message
 
     val successFunction = { data: URLData =>
       // This is the good case, where the form was successfully parsed as a Data object.
+      var urlModelJson = ""
+      try {
+        val inputStream = new URL(data.url).openStream()
+        val scanner = new Scanner(inputStream)
+        val responseBody = scanner.useDelimiter("\\A").next()
+        val title = responseBody.substring(responseBody.indexOf("<title>") + 7, responseBody.indexOf("</title>"))
 
-      println(s"RECEIVED: ${data.url}")
-
-      val urlModel = URLModel("https://rommelrico.com/", "Rommel Rico Test")
-
-      implicit val urlModelWrites = Json.writes[URLModel]
-      val urlModelJson = Json.toJson(urlModel).toString()
-
+        val urlModel = URLModel(data.url, title)
+        implicit val urlModelWrites = Json.writes[URLModel]
+        urlModelJson = Json.toJson(urlModel).toString()
+      } catch {
+        case nse: NoSuchElementException => nse.printStackTrace()
+        case mue: MalformedURLException => mue.printStackTrace()
+      }
       Ok(urlModelJson).as("application/json")
     }
 

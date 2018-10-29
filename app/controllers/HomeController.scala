@@ -4,7 +4,7 @@ import javax.inject._
 import models.URLModel
 import play.api.mvc._
 import play.api.libs.json._
-import java.net.{MalformedURLException, URL}
+import java.net._
 import java.util.Scanner
 
 import controllers.URLForm.{URLData, form}
@@ -53,15 +53,25 @@ class HomeController @Inject()(cc: MessagesControllerComponents) extends Message
       }
 
       var title = ""
+      val connection: HttpURLConnection = new URL(mySanitizedURL).openConnection().asInstanceOf[HttpURLConnection]
+      connection.setConnectTimeout(3000)
+      connection.setReadTimeout(3000)
       try {
-        val inputStream = new URL(mySanitizedURL).openStream()
-        val scanner = new Scanner(inputStream)
-        val responseBody = scanner.useDelimiter("\\A").next()
-        title = responseBody.substring(responseBody.indexOf("<title>") + 7, responseBody.indexOf("</title>"))
+        val status = connection.getResponseCode
+        if (status == 200) {
+          val inputStream = connection.getInputStream
+          val scanner = new Scanner(inputStream)
+          val responseBody = scanner.useDelimiter("\\A").next()
+          title = responseBody.substring(responseBody.indexOf("<title>") + 7, responseBody.indexOf("</title>"))
+        } else if (status == 429) {
+          title = "Server replied with HTTP 429 (Too many requests)."
+        }
       } catch {
-        // TODO: Do something else in case of exception
+        case ste: SocketTimeoutException => title = "ERROR: Request Timed Out"
+        case mue: MalformedURLException => title = "ERROR: " + mySanitizedURL + " is not a valid URL"
         case nse: NoSuchElementException => nse.printStackTrace()
-        case mue: MalformedURLException => mue.printStackTrace()
+      } finally {
+        connection.disconnect()
       }
 
       val urlModel = URLModel(mySanitizedURL, title)

@@ -29,6 +29,14 @@ $("#urlInputForm").submit(function(e) {
     e.preventDefault(); // avoid to execute the actual submit of the form.
 });
 
+
+$("#inputURL").bind('keyup', function (e) {
+    var myInput = $("#inputURL").val();
+    if (myInput != null && myInput === "") {
+        $("#chatmeter-alert-section").empty();
+    }
+});
+
 function insertAlert(title) {
     $("#chatmeter-alert-section").empty();
 

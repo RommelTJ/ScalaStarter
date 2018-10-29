@@ -15,10 +15,15 @@ $("#urlInputForm").submit(function(e) {
             type: "POST",
             url: url,
             data: form.serialize(), // serializes the form's elements.
+            beforeSend: function() {
+                insertAlert("Please wait...");
+            },
             success: function(data) {
                 if (data != null && data.title != null && data.title !== "") {
                     var title = data.title;
                     insertAlert(title);
+                } else {
+                    insertAlert(myInput + " is not a valid URL. Please try again.");
                 }
             },
             error: function (error) {

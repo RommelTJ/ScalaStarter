@@ -45,11 +45,16 @@ class HomeController @Inject()(cc: MessagesControllerComponents) extends Message
 
     val successFunction = { data: URLData =>
       // This is the good case, where the form was successfully parsed as a Data object.
-      // var urlModelJson = ""
+
+      // Special handling for URLs like 'cnn.com' that are technically invalid but we want to allow.
+      var mySanitizedURL = data.url
+      if (!mySanitizedURL.startsWith("http")) {
+        mySanitizedURL = s"https://${data.url}"
+      }
 
       var title = ""
       try {
-        val inputStream = new URL(data.url).openStream()
+        val inputStream = new URL(mySanitizedURL).openStream()
         val scanner = new Scanner(inputStream)
         val responseBody = scanner.useDelimiter("\\A").next()
         title = responseBody.substring(responseBody.indexOf("<title>") + 7, responseBody.indexOf("</title>"))
@@ -59,7 +64,7 @@ class HomeController @Inject()(cc: MessagesControllerComponents) extends Message
         case mue: MalformedURLException => mue.printStackTrace()
       }
 
-      val urlModel = URLModel(data.url, title)
+      val urlModel = URLModel(mySanitizedURL, title)
       implicit val urlModelWrites = Json.writes[URLModel]
       val urlModelJson = Json.toJson(urlModel).toString()
       if (title != "") {

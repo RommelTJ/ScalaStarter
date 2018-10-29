@@ -45,21 +45,28 @@ class HomeController @Inject()(cc: MessagesControllerComponents) extends Message
 
     val successFunction = { data: URLData =>
       // This is the good case, where the form was successfully parsed as a Data object.
-      var urlModelJson = ""
+      // var urlModelJson = ""
+
+      var title = ""
       try {
         val inputStream = new URL(data.url).openStream()
         val scanner = new Scanner(inputStream)
         val responseBody = scanner.useDelimiter("\\A").next()
-        val title = responseBody.substring(responseBody.indexOf("<title>") + 7, responseBody.indexOf("</title>"))
-
-        val urlModel = URLModel(data.url, title)
-        implicit val urlModelWrites = Json.writes[URLModel]
-        urlModelJson = Json.toJson(urlModel).toString()
+        title = responseBody.substring(responseBody.indexOf("<title>") + 7, responseBody.indexOf("</title>"))
       } catch {
+        // TODO: Do something else in case of exception
         case nse: NoSuchElementException => nse.printStackTrace()
         case mue: MalformedURLException => mue.printStackTrace()
       }
-      Ok(urlModelJson).as("application/json")
+
+      val urlModel = URLModel(data.url, title)
+      implicit val urlModelWrites = Json.writes[URLModel]
+      val urlModelJson = Json.toJson(urlModel).toString()
+      if (title != "") {
+        Ok(urlModelJson).as("application/json")
+      } else {
+        BadRequest(urlModelJson).as("application/json")
+      }
     }
 
     val formValidationResult = form.bindFromRequest

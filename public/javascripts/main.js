@@ -1,7 +1,6 @@
 $("#urlInputForm").submit(function(e) {
     var form = $(this);
     var url = form.attr('action');
-    console.log("HERE");
 
     $.ajax({
         type: "POST",
@@ -12,6 +11,10 @@ $("#urlInputForm").submit(function(e) {
                 var title = data.title;
                 insertAlert(title);
             }
+        }, 
+        error: function (error) {
+            var myInput = $("#inputURL").val();
+            insertAlert(myInput + " is not a valid URL. Please try again.");
         }
     });
 
